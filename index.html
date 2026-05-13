@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suç Dinamikleri Veri Simülasyonu</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-title">
+                <h1><i class="fa-solid fa-chart-line"></i> Toplumsal Şiddet ve Suç Dinamikleri Simülasyonu</h1>
+                <p>2016-2026 Gerçek Verileri Üzerinden Tahmine Dayalı Model</p>
+            </div>
+            <div class="header-controls">
+                <button id="toggleFullscreen" class="btn-icon"><i class="fa-solid fa-expand"></i> Tam Ekran</button>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <aside class="sidebar">
+                <h2><i class="fa-solid fa-sliders"></i> Bağımsız Değişkenler (Girdiler)</h2>
+                <p class="sidebar-desc">Simülasyon yılı (2027 ve sonrası) için aşağıdaki parametreleri ayarlayarak sonuçları gözlemleyin.</p>
+                
+                <div class="control-group">
+                    <h3>Ekonomik Veriler</h3>
+                    <div class="slider-container">
+                        <label for="unemployment">İşsizlik Oranı: <span id="unemployment-val">8.1</span>%</label>
+                        <input type="range" id="unemployment" min="5" max="25" step="0.1" value="8.1">
+                    </div>
+                    <div class="slider-container">
+                        <label for="inflation">Enflasyon (TÜFE): <span id="inflation-val">32.4</span>%</label>
+                        <input type="range" id="inflation" min="5" max="100" step="0.1" value="32.4">
+                    </div>
+                    <div class="slider-container">
+                        <label for="gini">Gini Katsayısı: <span id="gini-val">0.410</span></label>
+                        <input type="range" id="gini" min="0.300" max="0.500" step="0.001" value="0.410">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Adalet ve İnfaz Verileri</h3>
+                    <div class="slider-container">
+                        <label for="catchRate">Yakalanma Olasılığı: <span id="catchRate-val">98.3</span>%</label>
+                        <input type="range" id="catchRate" min="85" max="100" step="0.1" value="98.3">
+                    </div>
+                    <div class="slider-container">
+                        <label for="sentenceDuration">Ort. Fiili Ceza (Yıl): <span id="sentenceDuration-val">1.8</span></label>
+                        <input type="range" id="sentenceDuration" min="1.0" max="5.0" step="0.1" value="1.8">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Sosyal Yatırım</h3>
+                    <div class="slider-container">
+                        <label for="eduBudget">Eğitim Bütçesi (% GSYH): <span id="eduBudget-val">3.5</span>%</label>
+                        <input type="range" id="eduBudget" min="2.0" max="6.0" step="0.1" value="3.5">
+                    </div>
+                </div>
+                
+                <button id="runSimulationBtn" class="btn-action full-width"><i class="fa-solid fa-play"></i> Simülasyon Yılını İlerlet</button>
+            </aside>
+
+            <section class="dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Toplam Olay (Suç) Sayısı</h4>
+                        <div class="stat-value" id="outCrimeCount">3.422</div>
+                        <div class="stat-trend" id="trendCrimeCount">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Tekrar Suç İşleme (Recidivism)</h4>
+                        <div class="stat-value" id="outRecidivism">%33.1</div>
+                        <div class="stat-trend" id="trendRecidivism">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Cezaevi Mevcudu</h4>
+                        <div class="stat-value" id="outPrisonPop">362.422</div>
+                        <div class="stat-trend" id="trendPrisonPop">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Denetimli Serbestlik (Vaka)</h4>
+                        <div class="stat-value" id="outParole">615.000</div>
+                        <div class="stat-trend" id="trendParole">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Rehabilitasyon Katılım Sayısı</h4>
+                        <div class="stat-value" id="outRehab">118.000</div>
+                        <div class="stat-trend" id="trendRehab">-</div>
+                    </div>
+                </div>
+
+                <div class="charts-row">
+                    <div class="panel chart-panel">
+                        <h3><i class="fa-solid fa-chart-area"></i> Tarihsel ve Simülasyon Verisi: Suç Sayısı</h3>
+                        <div class="canvas-wrapper">
+                            <canvas id="crimeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel chart-panel">
+                        <h3><i class="fa-solid fa-chart-line"></i> Tarihsel ve Simülasyon Verisi: Cezaevi Mevcudu</h3>
+                        <div class="canvas-wrapper">
+                            <canvas id="prisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
